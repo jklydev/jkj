@@ -12,11 +12,20 @@ func main() {
 	journal_path := "/Users/jkiely/.journal/"
 	t := time.Now()
 	path := journal_path + dateString(t)
-	file, err := os.Create(path)
-	if err != nil {
-		log.Fatal(err)
+	var file os.File
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		file, err := os.Create(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		file.WriteString(beginFile(t))
+	} else {
+		file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0600)
+		if err != nil {
+			log.Fatal(err)
+		}
+		file.WriteString(subHeading(t))
 	}
-	file.WriteString(beginFile(t))
 	file.Close()
 }
 
@@ -43,7 +52,7 @@ func heading(t time.Time) string {
 	heading.WriteString(" ")
 	heading.WriteString(t.Month().String())
 	heading.WriteString("\n============")
-	heading.WriteString("\n\n")
+	heading.WriteString("\n")
 
 	return heading.String()
 }
@@ -51,6 +60,7 @@ func heading(t time.Time) string {
 func subHeading(t time.Time) string {
 	var subheading bytes.Buffer
 
+	subheading.WriteString("\n")
 	subheading.WriteString(sc.Itoa(t.Hour()))
 	subheading.WriteString(":")
 	subheading.WriteString(sc.Itoa(t.Minute()))
