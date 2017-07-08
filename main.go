@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	sc "strconv"
 	"time"
 )
@@ -15,18 +17,25 @@ func main() {
 	var file os.File
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		file, err := os.Create(path)
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 		file.WriteString(beginFile(t))
 	} else {
 		file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0600)
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 		file.WriteString(subHeading(t))
 	}
 	file.Close()
+	cmd := exec.Command("vim", "+ normal GA", path)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err := cmd.Run()
+	fmt.Println(err)
+}
+
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func dateString(t time.Time) string {
