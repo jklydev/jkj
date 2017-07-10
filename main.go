@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -12,6 +13,12 @@ import (
 
 func main() {
 	journal_path := "/Users/jkiely/.journal/"
+
+	var message string
+	flag.StringVar(&message, "m", "", "A journal entry")
+
+	flag.Parse()
+
 	t := time.Now()
 	path := journal_path + dateString(t)
 	var file os.File
@@ -24,12 +31,20 @@ func main() {
 		check(err)
 		file.WriteString(subHeading(t))
 	}
-	file.Close()
-	cmd := exec.Command("vim", "+ normal GA", path)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	err := cmd.Run()
-	fmt.Println(err)
+	if message != "" {
+		log.Println(message)
+		_, err := file.WriteString(message)
+		check(err)
+		file.Close()
+	} else {
+		file.Close()
+		cmd := exec.Command("vim", "+ normal GA", path)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		err := cmd.Run()
+		check(err)
+		fmt.Println(message)
+	}
 }
 
 func check(err error) {
