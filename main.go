@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -14,14 +13,23 @@ import (
 func main() {
 	journal_path := "/Users/jkiely/.journal/"
 
-	var message string
-	flag.StringVar(&message, "m", "", "A journal entry")
-
+	var entry string
+	flag.StringVar(&entry, "e", "", "A journal entry")
 	flag.Parse()
 
 	t := time.Now()
 	path := journal_path + dateString(t)
-	var file os.File
+
+	file := getFile(path, t)
+	if entry != "" {
+		writeFlagEntry(entry, file)
+	} else {
+		openEditor(path)
+	}
+	file.Close()
+}
+
+func getFile(path string, t time.Time) (file os.File) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		file, err := os.Create(path)
 		check(err)
@@ -31,20 +39,21 @@ func main() {
 		check(err)
 		file.WriteString(subHeading(t))
 	}
-	if message != "" {
-		log.Println(message)
-		_, err := file.WriteString(message)
-		check(err)
-		file.Close()
-	} else {
-		file.Close()
-		cmd := exec.Command("vim", "+ normal GA", path)
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		err := cmd.Run()
-		check(err)
-		fmt.Println(message)
-	}
+	return file
+}
+
+func openEditor(path string) {
+	cmd := exec.Command("vim", "+ normal GA", path)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err := cmd.Run()
+	check(err)
+}
+
+func writeFlagEntry(entry string, file os.File) {
+	log.Println(entry)
+	_, err := file.WriteString(entry)
+	check(err)
 }
 
 func check(err error) {
