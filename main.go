@@ -19,6 +19,7 @@ func main() {
 
 	t := time.Now()
 	path := journal_path + dateString(t)
+	log.Println(path)
 
 	file := getFile(path, t)
 	if entry != "" {
@@ -70,9 +71,19 @@ func check(err error) {
 func dateString(t time.Time) string {
 	var datestring bytes.Buffer
 	datestring.WriteString(sc.Itoa(t.Year()))
-	datestring.WriteString(sc.Itoa(t.YearDay()))
+	datestring.WriteString(prependZero(int(t.Month())))
+	datestring.WriteString(prependZero(t.Day()))
 
 	return datestring.String()
+}
+
+func prependZero(timeint int) string {
+	timestring := sc.Itoa(timeint)
+	if len(timestring) == 2 {
+		return timestring
+	} else {
+		return "0" + timestring
+	}
 }
 
 func beginFile(t time.Time) string {
@@ -87,7 +98,7 @@ func heading(t time.Time) string {
 	var heading bytes.Buffer
 
 	heading.WriteString("# ")
-	heading.WriteString(sc.Itoa(t.Day()))
+	heading.WriteString(prependZero(t.Day()))
 	heading.WriteString(" ")
 	heading.WriteString(t.Month().String())
 	heading.WriteString("\n")
@@ -100,9 +111,9 @@ func subHeading(t time.Time) string {
 
 	subheading.WriteString("\n")
 	subheading.WriteString("## ")
-	subheading.WriteString(sc.Itoa(t.Hour()))
+	subheading.WriteString(prependZero(t.Hour()))
 	subheading.WriteString(":")
-	subheading.WriteString(sc.Itoa(t.Minute()))
+	subheading.WriteString(prependZero(t.Minute()))
 	subheading.WriteString("\n")
 
 	return subheading.String()
