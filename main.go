@@ -22,24 +22,25 @@ func main() {
 
 	file := getFile(path, t)
 	if entry != "" {
-		writeFlagEntry(entry, file)
+		writeFlagEntry(entry, *file)
 	} else {
 		openEditor(path)
 	}
 	file.Close()
 }
 
-func getFile(path string, t time.Time) (file os.File) {
+func getFile(path string, t time.Time) (file *os.File) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		file, err := os.Create(path)
 		check(err)
 		file.WriteString(beginFile(t))
+		return file
 	} else {
 		file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0600)
 		check(err)
 		file.WriteString(subHeading(t))
+		return file
 	}
-	return file
 }
 
 func openEditor(path string) {
