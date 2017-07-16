@@ -51,10 +51,14 @@ func openEditor(path string) {
 	check(err)
 }
 
-func writeFlagEntry(entry string, file os.File) {
-	log.Println(entry)
-	_, err := file.WriteString(entry)
+func writeFlagEntry(flagstring string, file os.File) {
+	var entry bytes.Buffer
+	entry.WriteString(flagstring)
+	entry.WriteString("\n")
+
+	_, err := file.WriteString(entry.String())
 	check(err)
+
 }
 
 func check(err error) {
@@ -82,10 +86,10 @@ func beginFile(t time.Time) string {
 func heading(t time.Time) string {
 	var heading bytes.Buffer
 
+	heading.WriteString("# ")
 	heading.WriteString(sc.Itoa(t.Day()))
 	heading.WriteString(" ")
 	heading.WriteString(t.Month().String())
-	heading.WriteString("\n============")
 	heading.WriteString("\n")
 
 	return heading.String()
@@ -95,10 +99,10 @@ func subHeading(t time.Time) string {
 	var subheading bytes.Buffer
 
 	subheading.WriteString("\n")
+	subheading.WriteString("## ")
 	subheading.WriteString(sc.Itoa(t.Hour()))
 	subheading.WriteString(":")
 	subheading.WriteString(sc.Itoa(t.Minute()))
-	subheading.WriteString("\n------------")
 	subheading.WriteString("\n")
 
 	return subheading.String()
