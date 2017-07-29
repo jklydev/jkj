@@ -1,16 +1,15 @@
-package jkj
+package main
 
 import (
 	"bytes"
 	"flag"
-	"log"
 	"os"
 	"os/exec"
 	"time"
 )
 
 func main() {
-	journal_path := "/Users/jkiely/.journal/"
+	journal_path := getJournalPath()
 
 	var entry string
 	flag.StringVar(&entry, "e", "", "A journal entry")
@@ -59,7 +58,6 @@ func writeFlagEntry(flagstring string, file os.File) {
 	check(err)
 
 }
-
 
 func beginFile(t time.Time) string {
 	var header bytes.Buffer

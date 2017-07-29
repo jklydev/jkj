@@ -1,10 +1,10 @@
-package jkj
+package main
 
 import (
-	"log"
-	"time"
 	"bytes"
+	"log"
 	sc "strconv"
+	"time"
 )
 
 func check(err error) {
