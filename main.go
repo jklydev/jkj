@@ -42,7 +42,7 @@ func getFile(path string, t time.Time) (file *os.File) {
 }
 
 func openEditor(path string) {
-	cmd := exec.Command("vim", "+ normal GA", path)
+	cmd := exec.Command("vim", "+ :setf txt", "+norm Go", "+startinsert", path)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	err := cmd.Run()
