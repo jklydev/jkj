@@ -9,7 +9,8 @@ import (
 
 func getJournalPath() (journal_path string) {
 	options := readDotfile()
-	journal_path = options.journal_path
+	journal_path = options.Journal_path
+	journal_path = os.ExpandEnv(journal_path)
 	return journal_path
 }
 
@@ -38,5 +39,5 @@ func parseDotfile(path string) (options Options) {
 }
 
 type Options struct {
-	journal_path string
+	Journal_path string
 }
